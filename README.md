@@ -9,7 +9,7 @@ Per ora trascuriamo il magnetometro, serviranno:
 - calibrazione manuale (ACC, GIR, MAG)
 - Verifica connessione
 - lettura dati (ACC, GIR, ACC+GIR, MAG) nei formati: int grezzi, int corretti, float corretti
-- 
+
 
 
 MPU-9250 9 DOF IMU Arduino Library
