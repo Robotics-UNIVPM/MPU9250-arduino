@@ -1,7 +1,7 @@
 #Ristrutturazione in corso
 Abbiamo decisamente bisogno di API più elegante, puntiamo all'OOP.
 
-#API essenziale
+###API essenziale
 Per ora trascuriamo il magnetometro, serviranno:
 - inizializzatore, che legga le impostazioni scritte sul chip e le salvi nell'oggetto (fondoscala/sensitività, calibrazione ... )
 - scrittura impostazioni 
