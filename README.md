@@ -1,3 +1,17 @@
+#Ristrutturazione in corso
+Abbiamo decisamente bisogno di API più elegante, puntiamo all'OOP.
+
+#API essenziale
+Per ora trascuriamo il magnetometro, serviranno:
+- inizializzatore, che legga le impostazioni scritte sul chip e le salvi nell'oggetto (fondoscala/sensitività, calibrazione ... )
+- scrittura impostazioni 
+- calibrazione stazionaria (ACC, GIR, ACC+GIR)
+- calibrazione manuale (ACC, GIR, MAG)
+- Verifica connessione
+- lettura dati (ACC, GIR, ACC+GIR, MAG) nei formati: int grezzi, int corretti, float corretti
+- 
+
+
 MPU-9250 9 DOF IMU Arduino Library
 ==================================
 
