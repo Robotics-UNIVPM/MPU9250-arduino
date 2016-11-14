@@ -3,12 +3,44 @@
 
 #include <SPI.h>
 #include <Wire.h>
+#include "mpu9250-registers.h"
+
+struct vec{
+  float x,y,z;
+};
+
+class MPU9250 {
+
+    public:
+      void init();
+      bool newData();
+      bool online();
+
+      void updateAcc();
+      void updateGyr();
+      void updateAll();
+      vec facc();
+      vec fgyr();
 
 
-class MPU9250
-{
-  protected:
-    // Set initial input parameters
+      void getGres();
+      void getAres();
+      void calibrate(float * gyroBias, float * accelBias);
+      void MPU9250SelfTest(float * destination);
+
+
+      int16_t acc[3]; // unit depends on set scale
+      int16_t gyr[3]; // unit depends on set scale
+
+
+    private:
+      void writeByte(uint8_t, uint8_t);
+      uint8_t readByte(uint8_t);
+      void readBytes(uint8_t, uint8_t, uint8_t *);
+
+      float aRes, gRes;
+
+      // Set initial input parameters
     enum Ascale {
       AFS_2G = 0,
       AFS_4G,
@@ -23,60 +55,20 @@ class MPU9250
       GFS_2000DPS
     };
 
-    enum Mscale {
-      MFS_14BITS = 0, // 0.6 mG per LSB
-      MFS_16BITS      // 0.15 mG per LSB
-    };
-
     // Specify sensor full scale
     uint8_t Gscale = GFS_250DPS;
     uint8_t Ascale = AFS_2G;
-    // Choose either 14-bit or 16-bit magnetometer resolution
-    uint8_t Mscale = MFS_16BITS;
-    // 2 for 8 Hz, 6 for 100 Hz continuous magnetometer data read
-    uint8_t Mmode = 0x02;
 
-  public:
-    float pitch, yaw, roll;
-    float temperature;   // Stores the real internal chip temperature in Celsius
-    int16_t tempCount;   // Temperature raw count output
-    uint32_t delt_t = 0; // Used to control display output rate
-
-    uint32_t count = 0, sumCount = 0; // used to control display output rate
-    float deltat = 0.0f, sum = 0.0f;  // integration interval for both filter schemes
-    uint32_t lastUpdate = 0, firstUpdate = 0; // used to calculate integration interval
-    uint32_t Now = 0;        // used to calculate integration interval
-
-    int16_t gyroCount[3];   // Stores the 16-bit signed gyro sensor output
-    int16_t magCount[3];    // Stores the 16-bit signed magnetometer sensor output
     // Scale resolutions per LSB for the sensors
-    float aRes, gRes, mRes;
-    // Variables to hold latest sensor data values
-    float ax, ay, az, gx, gy, gz, mx, my, mz;
-    // Factory mag calibration and mag bias
-    float magCalibration[3] = {0, 0, 0}, magbias[3] = {0, 0, 0};
+
     // Bias corrections for gyro and accelerometer
     float gyroBias[3] = {0, 0, 0}, accelBias[3] = {0, 0, 0};
     float SelfTest[6];
-    // Stores the 16-bit signed accelerometer sensor output
-    int16_t accelCount[3];
 
-  public:
-    void getMres();
-    void getGres();
-    void getAres();
-    void readAccelData(int16_t *);
-    void readGyroData(int16_t *);
-    void readMagData(int16_t *);
-    int16_t readTempData();
-    void updateTime();
-    void initAK8963(float *);
-    void initMPU9250();
-    void calibrateMPU9250(float * gyroBias, float * accelBias);
-    void MPU9250SelfTest(float * destination);
-    void writeByte(uint8_t, uint8_t, uint8_t);
-    uint8_t readByte(uint8_t, uint8_t);
-    void readBytes(uint8_t, uint8_t, uint8_t, uint8_t *);
+
+
 };  // class MPU9250
+
+
 
 #endif // _MPU9250_H_

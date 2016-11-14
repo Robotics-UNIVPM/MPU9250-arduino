@@ -4,11 +4,11 @@ Abbiamo decisamente bisogno di API più elegante, puntiamo all'OOP.
 ###API essenziale
 Per ora trascuriamo il magnetometro, serviranno:
 - inizializzatore, che legga le impostazioni scritte sul chip e le salvi nell'oggetto (fondoscala/sensitività, calibrazione ... )
-- scrittura impostazioni 
+- scrittura impostazioni
 - calibrazione stazionaria (ACC, GIR, ACC+GIR)
-- calibrazione manuale (ACC, GIR, MAG)
+- calibrazione manuale (ACC, GIR)
 - Verifica connessione
-- lettura dati (ACC, GIR, ACC+GIR, MAG) nei formati: int grezzi, int corretti, float corretti
+- lettura dati (ACC, GIR, ACC+GIR) nei formati: int grezzi, int corretti, float corretti
 
 
 

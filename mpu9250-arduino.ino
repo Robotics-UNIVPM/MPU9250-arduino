@@ -1,32 +1,33 @@
-/* MPU9250 Basic Example Code
- by: Kris Winer
- date: April 1, 2014
- license: Beerware - Use this code however you'd like. If you
- find it useful you can buy me a beer some time.
- Modified by Brent Wilkins July 19, 2016
+#include "mpu9250.h"
 
- Demonstrate basic MPU-9250 functionality including parameterizing the register
- addresses, initializing the sensor, getting properly scaled accelerometer,
- gyroscope, and magnetometer data out. Added display functions to allow display
- to on breadboard monitor. Addition of 9 DoF sensor fusion using open source
- Madgwick and Mahony filter algorithms. Sketch runs on the 3.3 V 8 MHz Pro Mini
- and the Teensy 3.1.
+//Questo esempio fa solo uso di funzioni mpu9250 ricostruite da noi
+//Riesce a leggere una terna grezza dell'accelerometro a oltre 500Hz
 
- SDA and SCL should have external pull-up resistors (to 3.3V).
- 10k resistors are on the EMSENSR-9250 breakout board.
+MPU9250 imu;
 
- Hardware setup:
- MPU9250 Breakout --------- Arduino
- VDD ---------------------- 3.3V
- VDDI --------------------- 3.3V
- SDA ----------------------- A4
- SCL ----------------------- A5
- GND ---------------------- GND
- */
+void setup(){
+  Serial.begin(4000000); //4MBaud non sono necessari in realtà
+  Wire.begin();
 
-#include "MPU9250.h"
-
-MPU9250 myIMU;
+  while(!imu.online()){
+    Serial.println("Device missing");
+    delay(1000);
+  }
+}
+void loop(){
+  if (imu.newData())
+  {
+    imu.updateGyr();
+    Serial.print(millis());
+    Serial.print('\t');
+    Serial.print(imu.gyr[0]);
+    Serial.print('\t');
+    Serial.print(imu.gyr[1]);
+    Serial.print('\t');
+    Serial.println(imu.gyr[2]);
+  }
+}
+/*
 
 void setup()
 {
@@ -40,50 +41,51 @@ void setup()
 void loop()
 {
 
-  if (myIMU.readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01)
+  if (imu.readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01)
   {
-    myIMU.readAccelData(myIMU.accelCount);  // Read the x/y/z adc values
-    myIMU.getAres();
+    imu.readAccelData(imu.accelCount);  // Read the x/y/z adc values
+    imu.getAres();
 
     // Now we'll calculate the accleration value into actual g's
     // This depends on scale being set
-    myIMU.ax = (float)myIMU.accelCount[0]*myIMU.aRes; // - accelBias[0];
-    myIMU.ay = (float)myIMU.accelCount[1]*myIMU.aRes; // - accelBias[1];
-    myIMU.az = (float)myIMU.accelCount[2]*myIMU.aRes; // - accelBias[2];
+    imu.ax = (float)imu.accelCount[0]*imu.aRes; // - accelBias[0];
+    imu.ay = (float)imu.accelCount[1]*imu.aRes; // - accelBias[1];
+    imu.az = (float)imu.accelCount[2]*imu.aRes; // - accelBias[2];
 
-    myIMU.readGyroData(myIMU.gyroCount);  // Read the x/y/z adc values
-    myIMU.getGres();
+    imu.readGyroData(imu.gyroCount);  // Read the x/y/z adc values
+    imu.getGres();
 
     // Calculate the gyro value into actual degrees per second
     // This depends on scale being set
-    myIMU.gx = (float)myIMU.gyroCount[0]*myIMU.gRes;
-    myIMU.gy = (float)myIMU.gyroCount[1]*myIMU.gRes;
-    myIMU.gz = (float)myIMU.gyroCount[2]*myIMU.gRes;
+    imu.gx = (float)imu.gyroCount[0]*imu.gRes;
+    imu.gy = (float)imu.gyroCount[1]*imu.gRes;
+    imu.gz = (float)imu.gyroCount[2]*imu.gRes;
 
-    myIMU.readMagData(myIMU.magCount);  // Read the x/y/z adc values
-    myIMU.getMres();
+    imu.readMagData(imu.magCount);  // Read the x/y/z adc values
+    imu.getMres();
     // User environmental x-axis correction in milliGauss, should be
     // automatically calculated
-    myIMU.magbias[0] = +470.;
+    imu.magbias[0] = +470.;
     // User environmental x-axis correction in milliGauss TODO axis??
-    myIMU.magbias[1] = +120.;
+    imu.magbias[1] = +120.;
     // User environmental x-axis correction in milliGauss
-    myIMU.magbias[2] = +125.;
+    imu.magbias[2] = +125.;
 
     // Calculate the magnetometer values in milliGauss
     // Include factory calibration per data sheet and user environmental
     // corrections
     // Get actual magnetometer value, this depends on scale being set
-    myIMU.mx = (float)myIMU.magCount[0]*myIMU.mRes*myIMU.magCalibration[0] -
-               myIMU.magbias[0];
-    myIMU.my = (float)myIMU.magCount[1]*myIMU.mRes*myIMU.magCalibration[1] -
-               myIMU.magbias[1];
-    myIMU.mz = (float)myIMU.magCount[2]*myIMU.mRes*myIMU.magCalibration[2] -
-               myIMU.magbias[2];
+    imu.mx = (float)imu.magCount[0]*imu.mRes*imu.magCalibration[0] -
+               imu.magbias[0];
+    imu.my = (float)imu.magCount[1]*imu.mRes*imu.magCalibration[1] -
+               imu.magbias[1];
+    imu.mz = (float)imu.magCount[2]*imu.mRes*imu.magCalibration[2] -
+               imu.magbias[2];
   } // if (readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01)
 
 
-  float g = myIMU.ax*myIMU.ax+myIMU.ay*myIMU.ay+myIMU.az*myIMU.az;
+  float g = imu.ax*imu.ax+imu.ay*imu.ay+imu.az*imu.az;
   Serial.println(g);
 
 }
+/**/
