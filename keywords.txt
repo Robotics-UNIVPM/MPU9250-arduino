@@ -1,36 +1,15 @@
-################################################################################
-#             Syntax Coloring Map for SparkFun MPU-9250 Breakout               #
-################################################################################
 
-################################################################################
 # Datatypes (KEYWORD1)
-################################################################################
-
 MPU9250	KEYWORD1
 
-################################################################################
 # Methods and Functions (KEYWORD2)
-################################################################################
-
-getMres	KEYWORD2
-getGres	KEYWORD2
-getAres	KEYWORD2
-readAccelData	KEYWORD2
-readGyroData	KEYWORD2
-readMagData	KEYWORD2
-readTempData	KEYWORD2
-updateTime	KEYWORD2
-initAK8963	KEYWORD2
-initMPU9250	KEYWORD2
-calibrateMPU9250	KEYWORD2
-MPU9250SelfTest	KEYWORD2
-writeByte	KEYWORD2
-readByte	KEYWORD2
-readBytes	KEYWORD2
-
-MadgwickQuaternionUpdate	KEYWORD2
-MahonyQuaternionUpdate	KEYWORD2
-getQ	KEYWORD2
+newData			KEYWORD2
+online			KEYWORD2
+updateAcc		KEYWORD2
+updateGyr		KEYWORD2
+updateAll		KEYWORD2
+facc				KEYWORD2
+fgyr				KEYWORD2
 
 ################################################################################
 # Constants (LITERAL1)
