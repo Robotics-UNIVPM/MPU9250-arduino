@@ -1,33 +1,69 @@
 #include "mpu9250.h"
 
-//Questo esempio fa solo uso di funzioni mpu9250 ricostruite da noi
-//Riesce a leggere una terna grezza dell'accelerometro a oltre 500Hz
+//Questo sketch mostra:
+// - api libreria
+// - calibrazione in stato di quiete
+// - integrazione numerica
+
+//Questo sketch usa il 20% della program memory ...
+//La frequenza di integrazione è circa 700Hz
+//La stampa avviene a circa 20Hz
+
+//Il dato in output è la rotazione attorno all'asse Y
+
+//rimuovere la seguente riga per avere dati plottabili da Arduino IDE
+#define STAMPA_TEMPO
 
 MPU9250 imu;
+float bias;
 
 void setup(){
-  Serial.begin(4000000); //4MBaud non sono necessari in realtà
+  Serial.begin(115200);
   Wire.begin();
 
   while(!imu.online()){
-    Serial.println("Device missing");
     delay(1000);
+    //finchè non si collega il sensore non fare niente
   }
+
+  // Si suppone che il dispositivo rimanga immobile
+  // per i primi 1 o 2 sec
+  long sumgy = 0;
+  for (int i=0; i < 1000; i++){
+    imu.updateGyr();
+    sumgy+=imu.gyr[1];
+    delay(1);
+  }
+  bias = (float)sumgy / 1000.0;
 }
+
+long  lastPrint  = 0; //per limitare la frequenza di stampa
+long  lastIntegr = 0; //per calcolare il dt
+float pos        = 0; //valore integrato
+
 void loop(){
   if (imu.newData())
   {
     imu.updateGyr();
-    Serial.print(millis());
-    Serial.print('\t');
-    Serial.print(imu.gyr[0]);
-    Serial.print('\t');
-    Serial.print(imu.gyr[1]);
-    Serial.print('\t');
-    Serial.println(imu.gyr[2]);
+    pos += (( (float)imu.gyr[1]-bias )*( micros()-lastIntegr ));
+    lastIntegr = micros();
+    if (millis()-lastPrint > 50)
+    {
+      #ifdef STAMPA_TEMPO
+      Serial.print(millis());
+      Serial.print('\t');
+      #endif
+
+      //ATTENZIONE: unità di misura ignota
+      Serial.print(pos);
+
+      Serial.print('\n');
+      lastPrint = millis();
+    }
   }
 }
-/*
+
+/* Il resto di questo file rimane da studiare
 
 void setup()
 {
