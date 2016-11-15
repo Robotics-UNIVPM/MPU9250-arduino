@@ -53,7 +53,6 @@ vec MPU9250::fgyr(){
   v.z = (float)gyr[2]*gRes;
 }
 
-
 void MPU9250::writeByte(uint8_t subAddress, uint8_t data) {
   Wire.beginTransmission(MPU9250_ADDRESS);
   Wire.write(subAddress);
@@ -86,7 +85,7 @@ void MPU9250::readBytes(uint8_t subAddress, uint8_t count, uint8_t * dest) {
 //==============================================================================
 //==============================================================================
 //Funzioni da studiare/rivedere:
-
+/*
 void MPU9250::getGres() {
   switch (Gscale)
   {
@@ -422,3 +421,4 @@ void MPU9250::getAres() {
       destination[i+3] = 100.0*((float)(gSTAvg[i] - gAvg[i]))/factoryTrim[i+3]; // Report percent differences
     }
   }
+/**/
