@@ -4,6 +4,7 @@
 #include <Wire.h>
 #include "mpu9250-registers.h"
 
+//tipo di dato per contenere vettori di R^3
 struct vec{
   float x,y,z;
 };
@@ -11,17 +12,25 @@ struct vec{
 class MPU9250 {
 
 public:
+  //ci sono dati non letti sui registri?
   bool newData();
+
+  //il modulo è collegato?
   bool online();
 
+//da eseguire prima di leggere i dati dalle
+//variabili di stato corrispondenti
   void updateAcc();
   void updateGyr();
   void updateAll();
 
+//valori interi diretti dai registri
+//questi vengono aggiornati chiamando le funzioni
+//updateAcc updateGyr updateAll
   int16_t acc[3]; // unit depends on set scale
   int16_t gyr[3]; // unit depends on set scale
 
-
+//funzioni per ottenere i dati in scala
   vec facc(); // implementazione da completare
   vec fgyr(); // implementazione da completare
 
@@ -31,7 +40,11 @@ private:
   uint8_t readByte(uint8_t);
   void readBytes(uint8_t, uint8_t, uint8_t *);
 
+//coefficienti di proporzionalità
+// [aRes] = m/s^2 / bit
+// [gRes] = rad/s / bit
   float aRes, gRes;
+
 };
 /*
 

@@ -2,17 +2,39 @@
 
 //Funzioni revisionate:
 
+// promemoria per futura ottimizzazione:
+// l'utilizzo di questa funzione potrebbe essere sostituito da una routine
+// di interrupt legata al pin INT sul sensore
+// si avrebbero prestazioni migliori ma su Arduino UNO ci sono solo due pin
+// compatibili, e potrebbero essere necessari per altre cose (encoder).
 bool MPU9250::newData(){
   return (readByte(INT_STATUS) & 0x01);
 }
 
 bool MPU9250::online(){
   return(0x71 == readByte(WHO_AM_I_MPU9250));
-
 }
 
+//Non può funzionare bene finchè non troviamo aRes
+vec MPU9250::facc(){
+  vec v;
+  v.x = (float)acc[0]*aRes;
+  v.y = (float)acc[1]*aRes;
+  v.z = (float)acc[2]*aRes;
+}
+
+//Non può funzionare bene finchè non troviamo gRes
+vec MPU9250::fgyr(){
+  vec v;
+  v.x = (float)gyr[0]*gRes;
+  v.y = (float)gyr[1]*gRes;
+  v.z = (float)gyr[2]*gRes;
+}
+
+// --- Funzioni che accedono ai registri --- //
+
 void MPU9250::updateAcc() {
-  uint8_t rawData[6];  // x/y/z accel register data stored here
+  uint8_t rawData[6];
   readBytes(ACCEL_XOUT_H, 6, rawData);
   acc[0] = ((int16_t)rawData[0] << 8) | rawData[1] ;
   acc[1] = ((int16_t)rawData[2] << 8) | rawData[3] ;
@@ -20,7 +42,7 @@ void MPU9250::updateAcc() {
 }
 
 void MPU9250::updateGyr() {
-  uint8_t rawData[6];  // x/y/z gyro register data stored here
+  uint8_t rawData[6];
   readBytes(GYRO_XOUT_H, 6, rawData);
   gyr[0] = ((int16_t)rawData[0] << 8) | rawData[1] ;
   gyr[1] = ((int16_t)rawData[2] << 8) | rawData[3] ;
@@ -33,25 +55,16 @@ void MPU9250::updateAll() {
   acc[0] = ((int16_t)rawData[0] << 8) | rawData[1] ;
   acc[1] = ((int16_t)rawData[2] << 8) | rawData[3] ;
   acc[2] = ((int16_t)rawData[4] << 8) | rawData[5] ;
-  //temperaura = ((int16_t)rawData[6] << 8) | rawData[7] ;
+  //temperaura = ((int16_t)rawData[6] << 8) | rawData[7] ; non ci serve
   gyr[0] = ((int16_t)rawData[8]  << 8) | rawData[9] ;
   gyr[1] = ((int16_t)rawData[10] << 8) | rawData[11] ;
   gyr[2] = ((int16_t)rawData[12] << 8) | rawData[13] ;
 }
 
-vec MPU9250::facc(){
-  vec v;
-  v.x = (float)acc[0]*aRes;
-  v.y = (float)acc[1]*aRes;
-  v.z = (float)acc[2]*aRes;
-}
-
-vec MPU9250::fgyr(){
-  vec v;
-  v.x = (float)gyr[0]*gRes;
-  v.y = (float)gyr[1]*gRes;
-  v.z = (float)gyr[2]*gRes;
-}
+//--- Funzioni che facilitano l'I2C ---
+// subAddress sono gli indirizzi dei registri
+// tutti gli indirizzi, incluso quello dell'mpu9250 sono definiti in
+// mpu9250-registers.h
 
 void MPU9250::writeByte(uint8_t subAddress, uint8_t data) {
   Wire.beginTransmission(MPU9250_ADDRESS);
