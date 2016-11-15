@@ -1,6 +1,9 @@
 # Ristrutturazione in corso
 Abbiamo decisamente bisogno di API più elegante, puntiamo all'OOP.
 
+#Installazione
+Clonare questa repo dentro la vostra cartella libraries per Arduino IDE.
+
 ### API essenziale
 Per ora trascuriamo il magnetometro, serviranno:
 - inizializzatore, che legga le impostazioni scritte sul chip e le salvi

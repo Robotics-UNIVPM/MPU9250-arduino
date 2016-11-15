@@ -29,25 +29,26 @@ void setup(){
   // Si suppone che il dispositivo rimanga immobile
   // per i primi 1 o 2 sec
   long sumgy = 0;
-  for (int i=0; i < 1000; i++){
+  for (int i=0; i < 2000; i++){
     imu.updateGyr();
     sumgy+=imu.gyr[1];
     delay(1);
   }
-  bias = (float)sumgy / 1000.0;
+  bias = (float)sumgy / 1000;
 }
 
 long  lastPrint  = 0; //per limitare la frequenza di stampa
 long  lastIntegr = 0; //per calcolare il dt
 float pos        = 0; //valore integrato
+float scale = 0.0001;
 
 void loop(){
   if (imu.newData())
   {
-    imu.updateGyr();
-    pos += (( (float)imu.gyr[1]-bias )*( micros()-lastIntegr ));
-    lastIntegr = micros();
-    if (millis()-lastPrint > 50)
+    imu.updateAcc();/*
+    pos += scale*(( (float)imu.gyr[1]-bias )*( micros()-lastIntegr ));
+    lastIntegr = micros();*/
+    if (1)//(millis()-lastPrint > 50)
     {
       #ifdef STAMPA_TEMPO
       Serial.print(millis());
@@ -55,7 +56,7 @@ void loop(){
       #endif
 
       //ATTENZIONE: unità di misura ignota
-      Serial.print(pos);
+      Serial.print(imu.acc[2]);
 
       Serial.print('\n');
       lastPrint = millis();
