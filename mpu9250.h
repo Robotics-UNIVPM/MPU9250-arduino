@@ -5,6 +5,7 @@
 #include "mpu9250-registers.h"
 
 //tipo di dato per contenere vettori di R^3
+//serve per passare la terna by-value, cosa non permessa con un array...
 struct vec{
   float x,y,z;
 };
